@@ -7,9 +7,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple POJO (Plain Old Java Object) to represent a User.
- */
 class User {
     private int id;
     private String name;
@@ -26,39 +23,31 @@ class User {
     public String getEmail() { return email; }
 }
 
-/**
- * Main class that now extends JFrame to create a GUI for the CRUD operations.
- */
 public class GUI extends JFrame {
 
-    // --- Database connection details ---
     private static final String DB_URL = "jdbc:mysql://localhost:3306/companydb";
     private static final String USER = "root";
     private static final String PASS = "password"; // <-- IMPORTANT: Change this to your password
 
-    // --- GUI Components ---
     private final JTextField idField = new JTextField(5);
     private final JTextField nameField = new JTextField(20);
     private final JTextField emailField = new JTextField(20);
     private final JTable userTable;
     private final DefaultTableModel tableModel;
 
-    // Constructor to set up the GUI
     public GUI() {
         setTitle("User Management System");
         setSize(600, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // --- Table Setup ---
         String[] columnNames = {"ID", "Name", "Email"};
         tableModel = new DefaultTableModel(columnNames, 0);
         userTable = new JTable(tableModel);
         JScrollPane tableScrollPane = new JScrollPane(userTable);
 
-        // --- Form Panel Setup ---
         JPanel formPanel = new JPanel(new GridLayout(4, 2, 5, 5));
-        idField.setEditable(false); // ID is auto-generated and non-editable
+        idField.setEditable(false); 
         formPanel.add(new JLabel("ID:"));
         formPanel.add(idField);
         formPanel.add(new JLabel("Name:"));
@@ -66,7 +55,6 @@ public class GUI extends JFrame {
         formPanel.add(new JLabel("Email:"));
         formPanel.add(emailField);
 
-        // --- Button Panel Setup ---
         JPanel buttonPanel = new JPanel();
         JButton addButton = new JButton("Add User");
         JButton updateButton = new JButton("Update Selected");
@@ -77,19 +65,16 @@ public class GUI extends JFrame {
         buttonPanel.add(deleteButton);
         buttonPanel.add(clearButton);
 
-        // --- Layout ---
         setLayout(new BorderLayout(10, 10));
         add(formPanel, BorderLayout.NORTH);
         add(tableScrollPane, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // --- Action Listeners ---
         addButton.addActionListener(e -> addUser());
         updateButton.addActionListener(e -> updateUser());
         deleteButton.addActionListener(e -> deleteUser());
         clearButton.addActionListener(e -> clearFields());
 
-        // Add a listener to the table to populate fields when a row is clicked
         userTable.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 int selectedRow = userTable.getSelectedRow();
@@ -101,16 +86,13 @@ public class GUI extends JFrame {
             }
         });
 
-        // Initial data load
         refreshUserTable();
     }
 
     private void refreshUserTable() {
         try {
             List<User> users = getAllUsers();
-            // Clear existing data
             tableModel.setRowCount(0);
-            // Add new data
             for (User user : users) {
                 tableModel.addRow(new Object[]{user.getId(), user.getName(), user.getEmail()});
             }
@@ -180,7 +162,6 @@ public class GUI extends JFrame {
         userTable.clearSelection();
     }
 
-    // --- Main method to launch the GUI ---
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             GUI gui = new GUI();
@@ -188,7 +169,6 @@ public class GUI extends JFrame {
         });
     }
 
-    // --- Database Logic Methods (unchanged, just renamed for clarity) ---
     public static void createUser(User user) throws SQLException {
         String sql = "INSERT INTO users (name, email) VALUES (?, ?)";
         try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
